@@ -1,12 +1,6 @@
+<div dir="rtl">
+
 ‍‍`فارسی | Persian`
-
-<style>
-@import url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css');
-
-* {
-    font-family: 'Vazirmatn', sans-serif;
-}
-</style>
 
 # ZCalendar 🗓️
 
@@ -157,3 +151,5 @@ ZCalendar رو در کنار یادگیری **Rust و GTK4** شروع کردم �
 ## 📄 License
 
 این پروژه متن بازه و تحت مجوز **MIT** منتشر خواهد شد.
+
+</div>
