@@ -1,15 +1,17 @@
 ‍‍`فارسی | Persian`
 
 <style>
+
 @font-face {
     font-family: "Lalezar";
-    src: url("assets/Lalezar-Regular.ttf") format("woff2");
+    src: url("assets/Lalezar-Regular.ttf");
     font-weight: 400;
 }
 
 * {
     font-family: "Lalezar", sans-serif;
 }
+
 </style>
 
 # ZCalendar 🗓️
