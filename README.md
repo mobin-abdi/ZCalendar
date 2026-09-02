@@ -1,17 +1,11 @@
 ‍‍`فارسی | Persian`
 
 <style>
-
-@font-face {
-    font-family: "Lalezar";
-    src: url("assets/Lalezar-Regular.ttf");
-    font-weight: 400;
-}
+@import url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css');
 
 * {
-    font-family: "Lalezar", sans-serif;
+    font-family: 'Vazirmatn', sans-serif;
 }
-
 </style>
 
 # ZCalendar 🗓️
