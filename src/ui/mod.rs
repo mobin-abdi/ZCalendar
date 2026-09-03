@@ -1,3 +1,7 @@
+mod sidebar;
+mod converter;
+mod calendar;
+
 use gtk4::prelude::*;
 use jalali_calendar::JalaliDate;
 use std::cell::RefCell;
@@ -62,16 +66,37 @@ fn build_ui(application: &gtk4::Application) {
 
     let main_box = gtk4::Box::new(gtk4::Orientation::Vertical, 10);
 
+    let stack = gtk4::Stack::new();
+
     main_box.set_margin_top(20);
     main_box.set_margin_bottom(20);
     main_box.set_margin_start(20);
     main_box.set_margin_end(20);
 
+    let sidebar = sidebar::build_sidebar(&stack);
+
+    let sidebar_toggle = sidebar.clone();
+
+    let content_box = gtk4::Box::new(gtk4::Orientation::Horizontal, 0);
+
+    content_box.append(&main_box);
+    content_box.append(&sidebar);
+
+    let menu_button = gtk4::Button::with_label("☰");
+
     let navigation = gtk4::Box::new(gtk4::Orientation::Horizontal,10,);
+
+    navigation.append(&menu_button);
 
     navigation.set_halign(
         gtk4::Align::Center
     );
+    
+    menu_button.connect_clicked(move |_| {
+        sidebar_toggle.set_reveal_child(
+            !sidebar_toggle.reveals_child()
+        );
+    });
 
     let previous_button = gtk4::Button::with_label("←");
 
@@ -178,8 +203,20 @@ fn build_ui(application: &gtk4::Application) {
     css.load_from_data(
         r#"
         * {
-            font-family: "Vazirmatn";
+            font-family: "Vazir";
             font-size: 14px;
+        }
+
+        .sidebar {
+            background: #3584e4;
+            padding: 8px;
+        }
+
+        .sidebar button {
+            color: black;
+            background-color: #fff;
+            margin: 4px;
+            min-width: 100px;
         }
 
         .today {
@@ -190,6 +227,9 @@ fn build_ui(application: &gtk4::Application) {
             border-radius: 999px;
             padding: 0;
         }
+        .title-2 {
+            font-family: "Vazir";
+        }
         "#,
     );
 
@@ -199,7 +239,13 @@ fn build_ui(application: &gtk4::Application) {
         gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION,
     );
 
-    window.set_child(Some(&main_box));
+    stack.add_named(&content_box, Some("calendar"));
+
+    let converter_page = converter::build_converter_page(&stack);
+
+    stack.add_named(&converter_page, Some("converter"));
+
+    window.set_child(Some(&stack));
 
     window.show();
 }
