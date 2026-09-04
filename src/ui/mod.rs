@@ -1,5 +1,9 @@
 mod calendar;
 mod converter;
+<<<<<<< HEAD
+mod date_picker;
+=======
+>>>>>>> origin/main
 mod sidebar;
 
 use gtk4::prelude::*;
@@ -7,18 +11,16 @@ use jalali_calendar::JalaliDate;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-fn build_calendar(date: JalaliDate, today: JalaliDate) -> gtk4::Grid {
+fn build_calendar(date: JalaliDate, today: JalaliDate, selected_date: JalaliDate) -> gtk4::Grid {
     let grid = gtk4::Grid::new();
 
     grid.set_row_spacing(5);
     grid.set_column_spacing(5);
-
     grid.set_column_homogeneous(true);
     grid.set_row_homogeneous(true);
 
     let first_day = date.first_day_of_month();
     let first_weekday = first_day.weekday() as i32;
-
     let days_in_month = date.days_in_this_month();
 
     for day in 1..=days_in_month {
@@ -26,12 +28,18 @@ fn build_calendar(date: JalaliDate, today: JalaliDate) -> gtk4::Grid {
 
         label.set_hexpand(true);
         label.set_vexpand(true);
-
         label.set_halign(gtk4::Align::Center);
         label.set_valign(gtk4::Align::Center);
 
         if date.year() == today.year() && date.month() == today.month() && day == today.day() {
             label.add_css_class("today");
+        }
+
+        if date.year() == selected_date.year()
+            && date.month() == selected_date.month()
+            && day == selected_date.day()
+        {
+            label.add_css_class("selected-day");
         }
 
         let position = first_weekday + (day - 1) as i32;
@@ -54,9 +62,8 @@ fn build_ui(application: &gtk4::Application) {
         .build();
 
     let today = JalaliDate::today();
-
     let displayed_date = Rc::new(RefCell::new(today.first_day_of_month()));
-
+    let selected_date = Rc::new(RefCell::new(today));
     let main_box = gtk4::Box::new(gtk4::Orientation::Vertical, 10);
 
     let stack = gtk4::Stack::new();
@@ -66,17 +73,10 @@ fn build_ui(application: &gtk4::Application) {
     main_box.set_margin_start(20);
     main_box.set_margin_end(20);
 
-    let sidebar = sidebar::build_sidebar(&stack);
-
-    let sidebar_toggle = sidebar.clone();
-
-    let content_box = gtk4::Box::new(gtk4::Orientation::Horizontal, 0);
-
-    content_box.append(&main_box);
-    content_box.append(&sidebar);
-
     let menu_button = gtk4::Button::with_label("☰");
 
+<<<<<<< HEAD
+=======
     let navigation = gtk4::Box::new(gtk4::Orientation::Horizontal, 10);
 
     navigation.append(&menu_button);
@@ -87,6 +87,7 @@ fn build_ui(application: &gtk4::Application) {
         sidebar_toggle.set_reveal_child(!sidebar_toggle.reveals_child());
     });
 
+>>>>>>> origin/main
     let previous_button = gtk4::Button::with_label("←");
 
     let next_button = gtk4::Button::with_label("→");
@@ -97,10 +98,18 @@ fn build_ui(application: &gtk4::Application) {
 
     title.add_css_class("title-2");
 
+    let navigation = gtk4::Box::new(gtk4::Orientation::Horizontal, 10);
+
+    navigation.append(&menu_button);
     navigation.append(&previous_button);
     navigation.append(&title);
     navigation.append(&next_button);
     navigation.append(&today_button);
+<<<<<<< HEAD
+
+    navigation.set_halign(gtk4::Align::Center);
+=======
+>>>>>>> origin/main
 
     main_box.append(&navigation);
 
@@ -122,7 +131,6 @@ fn build_ui(application: &gtk4::Application) {
         let label = gtk4::Label::new(Some(name));
 
         label.set_hexpand(true);
-
         label.set_margin_bottom(8);
 
         weekdays.attach(&label, column as i32, 0, 1, 1);
@@ -135,13 +143,56 @@ fn build_ui(application: &gtk4::Application) {
     calendar_container.set_vexpand(true);
     calendar_container.set_hexpand(true);
 
+<<<<<<< HEAD
+    let calendar = build_calendar(*displayed_date.borrow(), today, *selected_date.borrow());
+=======
     let calendar = build_calendar(*displayed_date.borrow(), today);
+>>>>>>> origin/main
 
     calendar_container.append(&calendar);
 
     main_box.append(&calendar_container);
 
+    let displayed_date_for_sidebar = Rc::clone(&displayed_date);
+
+    let selected_date_for_sidebar = Rc::clone(&selected_date);
+
+    let title_for_sidebar = title.clone();
+
+    let calendar_container_for_sidebar = calendar_container.clone();
+
+    let sidebar = sidebar::build_sidebar(&stack, move |date| {
+        *selected_date_for_sidebar.borrow_mut() = date;
+
+        let month = date.first_day_of_month();
+
+        *displayed_date_for_sidebar.borrow_mut() = month;
+
+        title_for_sidebar.set_text(&format!("{} {}", month.month_name(), month.year()));
+
+        while let Some(child) = calendar_container_for_sidebar.first_child() {
+            calendar_container_for_sidebar.remove(&child);
+        }
+
+        let new_calendar = build_calendar(month, today, date);
+
+        calendar_container_for_sidebar.append(&new_calendar);
+    });
+
+    let sidebar_toggle = sidebar.clone();
+
+    menu_button.connect_clicked(move |_| {
+        sidebar_toggle.set_reveal_child(!sidebar_toggle.reveals_child());
+    });
+
+    let content_box = gtk4::Box::new(gtk4::Orientation::Horizontal, 0);
+
+    content_box.append(&main_box);
+    content_box.append(&sidebar);
+
     let displayed_date_prev = Rc::clone(&displayed_date);
+
+    let selected_date_prev = Rc::clone(&selected_date);
 
     let title_prev = title.clone();
 
@@ -160,13 +211,21 @@ fn build_ui(application: &gtk4::Application) {
             calendar_container_prev.remove(&child);
         }
 
+<<<<<<< HEAD
+        let new_calendar = build_calendar(previous, today, *selected_date_prev.borrow());
+=======
         let new_calendar = build_calendar(previous, today);
+>>>>>>> origin/main
 
         calendar_container_prev.append(&new_calendar);
     });
 
     let displayed_date_next = Rc::clone(&displayed_date);
+
+    let selected_date_next = Rc::clone(&selected_date);
+
     let title_next = title.clone();
+
     let calendar_container_next = calendar_container.clone();
 
     next_button.connect_clicked(move |_| {
@@ -182,16 +241,33 @@ fn build_ui(application: &gtk4::Application) {
             calendar_container_next.remove(&child);
         }
 
+<<<<<<< HEAD
+        let new_calendar = build_calendar(next, today, *selected_date_next.borrow());
+=======
         let new_calendar = build_calendar(next, today);
+>>>>>>> origin/main
 
         calendar_container_next.append(&new_calendar);
     });
 
     let displayed_date_today = Rc::clone(&displayed_date);
+<<<<<<< HEAD
+
+    let selected_date_today = Rc::clone(&selected_date);
+
+    let title_today = title.clone();
+
+    let calendar_container_today = calendar_container.clone();
+
+    today_button.connect_clicked(move |_| {
+        *selected_date_today.borrow_mut() = today;
+
+=======
     let title_today = title.clone();
     let calendar_container_today = calendar_container.clone();
 
     today_button.connect_clicked(move |_| {
+>>>>>>> origin/main
         let today_month = today.first_day_of_month();
 
         *displayed_date_today.borrow_mut() = today_month;
@@ -202,7 +278,11 @@ fn build_ui(application: &gtk4::Application) {
             calendar_container_today.remove(&child);
         }
 
+<<<<<<< HEAD
+        let new_calendar = build_calendar(today_month, today, today);
+=======
         let new_calendar = build_calendar(today_month, today);
+>>>>>>> origin/main
 
         calendar_container_today.append(&new_calendar);
     });
@@ -236,6 +316,15 @@ fn build_ui(application: &gtk4::Application) {
             border-radius: 999px;
             padding: 0;
         }
+
+        .selected-day {
+            border: 2px solid #3584e4;
+            min-width: 48px;
+            min-height: 48px;
+            border-radius: 999px;
+            padding: 0;
+        }
+
         .title-2 {
             font-family: "Vazir";
         }

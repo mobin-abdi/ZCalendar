@@ -1,21 +1,13 @@
 use gtk4::prelude::*;
 use jalali_calendar::JalaliDate;
 
-pub fn jalali_to_gregorian(
-    year: i32,
-    month: u32,
-    day: u32,
-) -> Result<(i32, u32, u32), jalali_calendar::Error> {
+pub fn jalali_to_gregorian(year: i32, month: u32, day: u32,) -> Result<(i32, u32, u32), jalali_calendar::Error> {
     let date = JalaliDate::new(year, month, day)?;
 
     Ok(date.to_gregorian())
 }
 
-pub fn gregorian_to_jalali(
-    year: i32,
-    month: u32,
-    day: u32,
-) -> Result<(i32, u32, u32), jalali_calendar::Error> {
+pub fn gregorian_to_jalali(year: i32, month: u32, day: u32,) -> Result<(i32, u32, u32), jalali_calendar::Error> {
     let date = JalaliDate::from_gregorian(year, month, day)?;
 
     Ok((date.year(), date.month(), date.day()))
