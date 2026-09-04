@@ -39,10 +39,7 @@ pub fn build_converter_page(stack: &gtk4::Stack) -> gtk4::Box {
         stack_clone.set_visible_child_name("calendar");
     });
 
-    let dropdown = gtk4::DropDown::from_strings(&[
-        "جلالی به میلادی",
-        "میلادی به جلالی",
-    ]);
+    let dropdown = gtk4::DropDown::from_strings(&["جلالی به میلادی", "میلادی به جلالی"]);
 
     dropdown.set_width_request(300);
     dropdown.set_height_request(45);
@@ -78,22 +75,20 @@ pub fn build_converter_page(stack: &gtk4::Stack) -> gtk4::Box {
     let month_entry_clone = month_entry.clone();
     let day_entry_clone = day_entry.clone();
 
-    dropdown.connect_selected_notify(move |dropdown| {
-        match dropdown.selected() {
-            0 => {
-                year_entry_clone.set_placeholder_text(Some("سال جلالی"));
-                month_entry_clone.set_placeholder_text(Some("ماه جلالی"));
-                day_entry_clone.set_placeholder_text(Some("روز جلالی"));
-            }
-
-            1 => {
-                year_entry_clone.set_placeholder_text(Some("سال میلادی"));
-                month_entry_clone.set_placeholder_text(Some("ماه میلادی"));
-                day_entry_clone.set_placeholder_text(Some("روز میلادی"));
-            }
-
-            _ => {}
+    dropdown.connect_selected_notify(move |dropdown| match dropdown.selected() {
+        0 => {
+            year_entry_clone.set_placeholder_text(Some("سال جلالی"));
+            month_entry_clone.set_placeholder_text(Some("ماه جلالی"));
+            day_entry_clone.set_placeholder_text(Some("روز جلالی"));
         }
+
+        1 => {
+            year_entry_clone.set_placeholder_text(Some("سال میلادی"));
+            month_entry_clone.set_placeholder_text(Some("ماه میلادی"));
+            day_entry_clone.set_placeholder_text(Some("روز میلادی"));
+        }
+
+        _ => {}
     });
 
     let convert_button = gtk4::Button::with_label("تبدیل");
@@ -142,54 +137,30 @@ pub fn build_converter_page(stack: &gtk4::Stack) -> gtk4::Box {
         };
 
         match dropdown_clone.selected() {
-            0 => {
-                match jalali_to_gregorian(year, month, day) {
-
-                    Ok(result) => {
-                        result_label_clone.set_text(
-                            &format!(
-                                "نتیجه: {}/{}/{}",
-                                result.0,
-                                result.1,
-                                result.2
-                            )
-                        );
-                    }
-
-                    Err(_) => {
-                        result_label_clone.set_text(
-                            "تاریخ وارد شده معتبر نیست"
-                        );
-                    }
+            0 => match jalali_to_gregorian(year, month, day) {
+                Ok(result) => {
+                    result_label_clone
+                        .set_text(&format!("نتیجه: {}/{}/{}", result.0, result.1, result.2));
                 }
-            }
 
-            1 => {
-                match gregorian_to_jalali(year, month, day) {
-
-                    Ok(result) => {
-                        result_label_clone.set_text(
-                            &format!(
-                                "نتیجه: {}/{}/{}",
-                                result.0,
-                                result.1,
-                                result.2
-                            )
-                        );
-                    }
-
-                    Err(_) => {
-                        result_label_clone.set_text(
-                            "تاریخ وارد شده معتبر نیست"
-                        );
-                    }
+                Err(_) => {
+                    result_label_clone.set_text("تاریخ وارد شده معتبر نیست");
                 }
-            }
+            },
+
+            1 => match gregorian_to_jalali(year, month, day) {
+                Ok(result) => {
+                    result_label_clone
+                        .set_text(&format!("نتیجه: {}/{}/{}", result.0, result.1, result.2));
+                }
+
+                Err(_) => {
+                    result_label_clone.set_text("تاریخ وارد شده معتبر نیست");
+                }
+            },
 
             _ => {
-                result_label_clone.set_text(
-                    "نوع تبدیل نامعتبر است"
-                );
+                result_label_clone.set_text("نوع تبدیل نامعتبر است");
             }
         }
     });

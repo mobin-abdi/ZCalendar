@@ -1,6 +1,6 @@
-mod sidebar;
-mod converter;
 mod calendar;
+mod converter;
+mod sidebar;
 
 use gtk4::prelude::*;
 use jalali_calendar::JalaliDate;
@@ -30,7 +30,7 @@ fn build_calendar(date: JalaliDate, today: JalaliDate) -> gtk4::Grid {
         label.set_halign(gtk4::Align::Center);
         label.set_valign(gtk4::Align::Center);
 
-        if date.year() == today.year() && date.month() == today.month() && day == today.day(){
+        if date.year() == today.year() && date.month() == today.month() && day == today.day() {
             label.add_css_class("today");
         }
 
@@ -39,26 +39,19 @@ fn build_calendar(date: JalaliDate, today: JalaliDate) -> gtk4::Grid {
         let column = position % 7;
         let row = position / 7;
 
-        grid.attach(
-            &label,
-            column,
-            row,
-            1,
-            1,
-        );
+        grid.attach(&label, column, row, 1, 1);
     }
 
     grid
 }
 
 fn build_ui(application: &gtk4::Application) {
-    let window =
-        gtk4::ApplicationWindow::builder()
-            .application(application)
-            .title("ZCalendar")
-            .default_width(700)
-            .default_height(500)
-            .build();
+    let window = gtk4::ApplicationWindow::builder()
+        .application(application)
+        .title("ZCalendar")
+        .default_width(700)
+        .default_height(500)
+        .build();
 
     let today = JalaliDate::today();
 
@@ -84,24 +77,21 @@ fn build_ui(application: &gtk4::Application) {
 
     let menu_button = gtk4::Button::with_label("☰");
 
-    let navigation = gtk4::Box::new(gtk4::Orientation::Horizontal,10,);
+    let navigation = gtk4::Box::new(gtk4::Orientation::Horizontal, 10);
 
     navigation.append(&menu_button);
 
-    navigation.set_halign(
-        gtk4::Align::Center
-    );
-    
+    navigation.set_halign(gtk4::Align::Center);
+
     menu_button.connect_clicked(move |_| {
-        sidebar_toggle.set_reveal_child(
-            !sidebar_toggle.reveals_child()
-        );
+        sidebar_toggle.set_reveal_child(!sidebar_toggle.reveals_child());
     });
 
     let previous_button = gtk4::Button::with_label("←");
 
     let next_button = gtk4::Button::with_label("→");
 
+    let today_button = gtk4::Button::with_label("امروز");
 
     let title = gtk4::Label::new(Some(&format!("{} {}", today.month_name(), today.year())));
 
@@ -110,6 +100,7 @@ fn build_ui(application: &gtk4::Application) {
     navigation.append(&previous_button);
     navigation.append(&title);
     navigation.append(&next_button);
+    navigation.append(&today_button);
 
     main_box.append(&navigation);
 
@@ -117,11 +108,17 @@ fn build_ui(application: &gtk4::Application) {
 
     weekdays.set_column_homogeneous(true);
 
-    let weekday_names = ["شنبه", "یکشنبه", "دوشنبه", "سه‌شنبه", "چهارشنبه", "پنجشنبه", "جمعه",
+    let weekday_names = [
+        "شنبه",
+        "یکشنبه",
+        "دوشنبه",
+        "سه‌شنبه",
+        "چهارشنبه",
+        "پنجشنبه",
+        "جمعه",
     ];
 
     for (column, name) in weekday_names.iter().enumerate() {
-
         let label = gtk4::Label::new(Some(name));
 
         label.set_hexpand(true);
@@ -138,7 +135,6 @@ fn build_ui(application: &gtk4::Application) {
     calendar_container.set_vexpand(true);
     calendar_container.set_hexpand(true);
 
-
     let calendar = build_calendar(*displayed_date.borrow(), today);
 
     calendar_container.append(&calendar);
@@ -151,52 +147,65 @@ fn build_ui(application: &gtk4::Application) {
 
     let calendar_container_prev = calendar_container.clone();
 
+    previous_button.connect_clicked(move |_| {
+        let current = *displayed_date_prev.borrow();
 
-    previous_button.connect_clicked(
-        move |_| {
-            let current = *displayed_date_prev.borrow();
+        let previous = current.add_months(-1);
 
-            let previous = current.add_months(-1);
+        *displayed_date_prev.borrow_mut() = previous;
 
-            *displayed_date_prev.borrow_mut() = previous;
+        title_prev.set_text(&format!("{} {}", previous.month_name(), previous.year()));
 
-            title_prev.set_text(&format!("{} {}", previous.month_name(), previous.year()));
-
-            while let Some(child) = calendar_container_prev.first_child() {
-                calendar_container_prev.remove(
-                    &child
-                );
-            }
-
-            let new_calendar = build_calendar(previous, today);
-
-            calendar_container_prev.append(&new_calendar);
+        while let Some(child) = calendar_container_prev.first_child() {
+            calendar_container_prev.remove(&child);
         }
-    );
+
+        let new_calendar = build_calendar(previous, today);
+
+        calendar_container_prev.append(&new_calendar);
+    });
 
     let displayed_date_next = Rc::clone(&displayed_date);
     let title_next = title.clone();
     let calendar_container_next = calendar_container.clone();
 
-    next_button.connect_clicked(
-        move |_| {
-            let current = *displayed_date_next.borrow();
+    next_button.connect_clicked(move |_| {
+        let current = *displayed_date_next.borrow();
 
-            let next = current.add_months(1);
+        let next = current.add_months(1);
 
-            *displayed_date_next.borrow_mut() = next;
+        *displayed_date_next.borrow_mut() = next;
 
-            title_next.set_text(&format!("{} {}", next.month_name(), next.year()));
+        title_next.set_text(&format!("{} {}", next.month_name(), next.year()));
 
-            while let Some(child) = calendar_container_next.first_child(){
-                calendar_container_next.remove(&child);
-            }
-
-            let new_calendar =build_calendar(next, today);
-
-            calendar_container_next.append(&new_calendar);
+        while let Some(child) = calendar_container_next.first_child() {
+            calendar_container_next.remove(&child);
         }
-    );
+
+        let new_calendar = build_calendar(next, today);
+
+        calendar_container_next.append(&new_calendar);
+    });
+
+    let displayed_date_today = Rc::clone(&displayed_date);
+    let title_today = title.clone();
+    let calendar_container_today = calendar_container.clone();
+
+    today_button.connect_clicked(move |_| {
+        let today_month = today.first_day_of_month();
+
+        *displayed_date_today.borrow_mut() = today_month;
+
+        title_today.set_text(&format!("{} {}", today.month_name(), today.year()));
+
+        while let Some(child) = calendar_container_today.first_child() {
+            calendar_container_today.remove(&child);
+        }
+
+        let new_calendar = build_calendar(today_month, today);
+
+        calendar_container_today.append(&new_calendar);
+    });
 
     let css = gtk4::CssProvider::new();
 
@@ -251,7 +260,7 @@ fn build_ui(application: &gtk4::Application) {
 }
 
 pub fn show_window() {
-    let application = gtk4::Application::new(Some("ir.zcalendar.ZCalendar"), Default::default(),);
+    let application = gtk4::Application::new(Some("ir.zcalendar.ZCalendar"), Default::default());
     application.connect_activate(build_ui);
     application.run();
 }
