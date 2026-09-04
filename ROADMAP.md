@@ -44,8 +44,8 @@ The roadmap is not a fixed contract. Priorities may change based on user feedbac
 
 > Add useful tools around the Jalali calendar.
 
-* [ ] Jalali ↔ Gregorian date conversion
-* [ ] Jalali ↔ Hijri date conversion
+* [x] Jalali ↔ Gregorian date conversion
+* [x] Jalali ↔ Gregorian date conversion
 * [ ] Date details
 * [ ] Week number support
 * [ ] Today shortcut
