@@ -1,6 +1,9 @@
 mod calendar;
 mod converter;
+<<<<<<< HEAD
 mod date_picker;
+=======
+>>>>>>> origin/main
 mod sidebar;
 
 use gtk4::prelude::*;
@@ -72,6 +75,19 @@ fn build_ui(application: &gtk4::Application) {
 
     let menu_button = gtk4::Button::with_label("☰");
 
+<<<<<<< HEAD
+=======
+    let navigation = gtk4::Box::new(gtk4::Orientation::Horizontal, 10);
+
+    navigation.append(&menu_button);
+
+    navigation.set_halign(gtk4::Align::Center);
+
+    menu_button.connect_clicked(move |_| {
+        sidebar_toggle.set_reveal_child(!sidebar_toggle.reveals_child());
+    });
+
+>>>>>>> origin/main
     let previous_button = gtk4::Button::with_label("←");
 
     let next_button = gtk4::Button::with_label("→");
@@ -89,8 +105,11 @@ fn build_ui(application: &gtk4::Application) {
     navigation.append(&title);
     navigation.append(&next_button);
     navigation.append(&today_button);
+<<<<<<< HEAD
 
     navigation.set_halign(gtk4::Align::Center);
+=======
+>>>>>>> origin/main
 
     main_box.append(&navigation);
 
@@ -124,7 +143,11 @@ fn build_ui(application: &gtk4::Application) {
     calendar_container.set_vexpand(true);
     calendar_container.set_hexpand(true);
 
+<<<<<<< HEAD
     let calendar = build_calendar(*displayed_date.borrow(), today, *selected_date.borrow());
+=======
+    let calendar = build_calendar(*displayed_date.borrow(), today);
+>>>>>>> origin/main
 
     calendar_container.append(&calendar);
 
@@ -188,7 +211,11 @@ fn build_ui(application: &gtk4::Application) {
             calendar_container_prev.remove(&child);
         }
 
+<<<<<<< HEAD
         let new_calendar = build_calendar(previous, today, *selected_date_prev.borrow());
+=======
+        let new_calendar = build_calendar(previous, today);
+>>>>>>> origin/main
 
         calendar_container_prev.append(&new_calendar);
     });
@@ -214,12 +241,17 @@ fn build_ui(application: &gtk4::Application) {
             calendar_container_next.remove(&child);
         }
 
+<<<<<<< HEAD
         let new_calendar = build_calendar(next, today, *selected_date_next.borrow());
+=======
+        let new_calendar = build_calendar(next, today);
+>>>>>>> origin/main
 
         calendar_container_next.append(&new_calendar);
     });
 
     let displayed_date_today = Rc::clone(&displayed_date);
+<<<<<<< HEAD
 
     let selected_date_today = Rc::clone(&selected_date);
 
@@ -230,6 +262,12 @@ fn build_ui(application: &gtk4::Application) {
     today_button.connect_clicked(move |_| {
         *selected_date_today.borrow_mut() = today;
 
+=======
+    let title_today = title.clone();
+    let calendar_container_today = calendar_container.clone();
+
+    today_button.connect_clicked(move |_| {
+>>>>>>> origin/main
         let today_month = today.first_day_of_month();
 
         *displayed_date_today.borrow_mut() = today_month;
@@ -240,7 +278,11 @@ fn build_ui(application: &gtk4::Application) {
             calendar_container_today.remove(&child);
         }
 
+<<<<<<< HEAD
         let new_calendar = build_calendar(today_month, today, today);
+=======
+        let new_calendar = build_calendar(today_month, today);
+>>>>>>> origin/main
 
         calendar_container_today.append(&new_calendar);
     });
